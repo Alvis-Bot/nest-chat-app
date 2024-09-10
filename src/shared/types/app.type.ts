@@ -1,3 +1,5 @@
+import { DatabaseConfig } from './database.type';
+
 export type AppConfig = {
   port: number;
   name: string;
@@ -7,4 +9,9 @@ export type AppConfig = {
   debug: boolean;
   cors_origin: boolean | string | string[];
   log_level: string;
+};
+
+export type AllConfigType = {
+  database: DatabaseConfig;
+  app: AppConfig;
 };
