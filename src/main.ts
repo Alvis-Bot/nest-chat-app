@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { configSwagger } from './configs/swagger.config';
+import { GlobalExceptionFilter } from './common/filter/global-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -26,7 +27,10 @@ async function bootstrap() {
       },
     }),
   );
-  console.log(process.env.MONGO_URI);
+
+  // setup global exception filter
+  app.useGlobalFilters(new GlobalExceptionFilter(configService));
+
   if (isDevelopment) {
     configSwagger(app);
   }
@@ -38,4 +42,4 @@ async function bootstrap() {
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
 
-bootstrap();
+void bootstrap();
