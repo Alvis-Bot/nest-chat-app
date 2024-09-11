@@ -1,0 +1,21 @@
+services:
+  app-mongodb-prod:
+    image: app-mongodb-prod
+    container_name: app-mongodb-prod
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    env_file:
+      - .env
+      - .env.production
+    ports:
+      - "3110:3000"
+    volumes:
+      - ./src:/app/src
+    networks:
+      - app-mongodb-network-prod
+networks:
+  app-mongodb-network-prod:
+    driver: bridge

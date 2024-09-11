@@ -5,8 +5,8 @@ export enum Environment {
 }
 
 export enum OrderBy {
-  ASC = 'ASC',
-  DESC = 'DESC',
+  ASC = 'asc',
+  DESC = 'desc',
 }
 
 export const IS_PUBLIC_KEY = 'isPublic';

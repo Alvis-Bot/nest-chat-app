@@ -8,6 +8,7 @@ import {
 } from '@nestjs/swagger';
 import { ApiPaginatedResponse } from './swagger.decorator';
 import { ErrorDto } from '../../shared/dto/error.dto';
+import { ApiResponseOptions } from "@nestjs/swagger/dist/decorators/api-response.decorator";
 
 type ApiResponseType = number;
 
@@ -57,11 +58,16 @@ export const ApiEndpoint = (
     // isPublic,
   } = options;
 
-  const okResponse = {
-    type,
-    description: description ?? 'OK',
-    // paginationType: paginationType || 'offset',
-  };
+  const okResponse = isPaginated
+    ? {
+        type,
+        description: description ?? 'OK',
+      }
+    : {
+        isArray: true,
+        type,
+        description: description ?? 'OK',
+      };
 
   // const authDecorators = (auths).map(auth => {
   //   switch (auth) {

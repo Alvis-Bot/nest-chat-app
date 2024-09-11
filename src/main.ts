@@ -11,13 +11,15 @@ import { ConfigService } from '@nestjs/config';
 import { configSwagger } from './configs/swagger.config';
 import { GlobalExceptionFilter } from './common/filter/global-exception.filter';
 import { AllConfigType } from './shared/types';
+import { Environment } from './shared/constants/app.constant';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const configService = app.get(ConfigService<AllConfigType>);
   const isDevelopment =
-    configService.get('app.node_env', { infer: true }) === 'development';
+    configService.get('app.node_env', { infer: true }) ===
+    Environment.DEVELOPMENT;
 
   app.useGlobalPipes(
     new ValidationPipe({

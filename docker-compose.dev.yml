@@ -1,0 +1,22 @@
+services:
+  app-mongodb:
+    image: app-mongodb
+    container_name: app-mongodb
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    env_file:
+      - .env
+      - .env.development
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src:/app/src
+    command: yarn start:dev
+    networks:
+      - app-mongodb-network
+networks:
+  app-mongodb-network:
+    driver: bridge

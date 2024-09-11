@@ -64,8 +64,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     };
 
     this.logger.error(exception);
-    this.logger.warn(errorRes);
-    this.logger.debug(exception);
     return errorRes;
   }
 

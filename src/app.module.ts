@@ -7,6 +7,7 @@ import databaseConfig from './configs/envs/database.config';
 import 'dotenv/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AllConfigType } from './shared/types';
+import { UsersModule } from './module/users/users.module';
 
 @Module({
   imports: [
@@ -19,11 +20,13 @@ import { AllConfigType } from './shared/types';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService<AllConfigType>) => ({
         uri: configService.get('database.mongo_uri', { infer: true }),
+        // Đồng bo schema
       }),
       inject: [ConfigService],
     }),
     BaseModule,
     HealthModule,
+    UsersModule,
   ],
 })
 export class AppModule {}

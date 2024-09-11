@@ -8,6 +8,7 @@ import {
   DEFAULT_PAGE_LIMIT,
   OrderBy,
 } from '../../../shared/constants/app.constant';
+import { Expose } from 'class-transformer';
 
 export class PaginationDto {
   @NumberFieldOptional({
@@ -27,9 +28,12 @@ export class PaginationDto {
   @StringFieldOptional()
   readonly q?: string;
 
-  @EnumFieldOptional(() => OrderBy, { default: OrderBy.DESC })
+  @EnumFieldOptional(() => OrderBy, {
+    default: OrderBy.DESC,
+  })
   readonly order?: OrderBy = OrderBy.DESC;
 
+  @Expose()
   get skip() {
     return this.page ? (this.page - 1) * this.take : 0;
   }
