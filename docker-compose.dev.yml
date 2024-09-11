@@ -1,7 +1,7 @@
 services:
-  app-mongodb:
-    image: app-mongodb
-    container_name: app-mongodb
+  app-mongodb-dev:
+    image: app-mongodb-dev
+    container_name: app-mongodb-dev
     restart: always
     build:
       context: .
@@ -14,9 +14,4 @@ services:
       - "3000:3000"
     volumes:
       - ./src:/app/src
-    command: yarn start:dev
-    networks:
-      - app-mongodb-network
-networks:
-  app-mongodb-network:
-    driver: bridge
+    command: yarn start

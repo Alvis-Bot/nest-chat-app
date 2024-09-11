@@ -31,4 +31,9 @@ export class UsersController {
   selectUsers(@Query() options: PaginationDto) {
     return this.usersService.selectUsers(options);
   }
+  //
+  // @Get('test')
+  // test() {
+  //   return 'Hello World';
+  // }
 }

@@ -1,47 +1,64 @@
 ##################
 # BUILD BASE IMAGE
 ##################
+
 FROM node:20-alpine AS base
-
-WORKDIR /app
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
-
 
 #############################
 # BUILD FOR LOCAL DEVELOPMENT
 #############################
+
+# Install dependencies
 FROM base AS development
 
-# Copy the source code and install dependencies
+# Set the working directory
+WORKDIR /app
+
+# Copy the package.json and yarn.lock files
+COPY package.json yarn.lock ./
+
+# Install dependencies
+RUN yarn install
+
+# Copy the source code
 COPY . .
 
-# Build the application
-RUN yarn run build
+# Use development Node.js environment
+ENV NODE_ENV=development
 
-# Start the development server
+# Expose port
+EXPOSE 3000
+
+# Command to run the application with nodemon
 CMD ["yarn", "start"]
 
 
 #############################
 # BUILD FOR PRODUCTION
 #############################
+
 FROM base AS production
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the package.json and yarn.lock files
+
+COPY package.json yarn.lock ./
+
+# Install dependencies
+RUN yarn install --production
 
 # Copy the source code
 COPY . .
 
-# Build the application
-RUN yarn run build
-
-# Use production-ready Node.js environment
+# Use production Node.js environment
 ENV NODE_ENV=production
 
-# Remove dev dependencies to reduce image size
-RUN yarn install --frozen-lockfile --production
+# Expose port
+EXPOSE 3000
 
-# Expose necessary port (optional, depending on your setup)
-#EXPOSE 3000
-
-# Start the production server
+# Command to run the application
 CMD ["node", "dist/main.js"]
+
+
