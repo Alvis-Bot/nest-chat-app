@@ -10,12 +10,14 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { configSwagger } from './configs/swagger.config';
 import { GlobalExceptionFilter } from './common/filter/global-exception.filter';
+import { AllConfigType } from './shared/types';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const configService = app.get(ConfigService);
-  const isDevelopment = configService.get('app.env') === 'development';
+  const configService = app.get(ConfigService<AllConfigType>);
+  const isDevelopment =
+    configService.get('app.node_env', { infer: true }) === 'development';
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -37,7 +39,7 @@ async function bootstrap() {
 
   // Middleware
   middleware(app);
-  await app.listen(configService.get('app.port'));
+  await app.listen(configService.get('app.port', { infer: true }));
 
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
