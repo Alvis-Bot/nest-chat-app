@@ -15,6 +15,7 @@ export class UsersController {
     summary: 'Create a new user',
     description: 'Create a new user',
     type: UserResDto,
+    isPublic: true,
   })
   @Post()
   createUser(@Body() dto: UserCreateReqDto) {
@@ -26,6 +27,7 @@ export class UsersController {
     description: 'Select users',
     type: UserResDto,
     isPaginated: true,
+    isPublic: false,
   })
   @Get()
   selectUsers(@Query() options: PaginationDto) {

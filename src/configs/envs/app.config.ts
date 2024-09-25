@@ -41,6 +41,9 @@ class EnvironmentVariables {
   APP_DEBUG: boolean;
 
   @IsString()
+  FIREBASE_SDK_PATH: string;
+
+  @IsString()
   @Matches(
     /^(true|false|\*|([\w]+:\/\/)?([\w.-]+)(:[0-9]+)?)?(,([\w]+:\/\/)?([\w.-]+)(:[0-9]+)?)*$/,
   )
@@ -62,6 +65,7 @@ export default registerAs<AppConfig>('app', (): AppConfig => {
     debug: process.env.APP_DEBUG === 'true',
     cors_origin: getCorsOrigin(),
     log_level: process.env.APP_LOG_LEVEL || 'warn',
+    firebase_sdk_path: process.env.FIREBASE_SDK_PATH,
   };
 });
 

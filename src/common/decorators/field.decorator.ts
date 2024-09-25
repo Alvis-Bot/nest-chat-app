@@ -50,10 +50,6 @@ interface INumberFieldOptions extends IFieldOptions {
   isPositive?: boolean;
 }
 
-interface IPhoneFieldOptions extends IStringFieldOptions {
-  countryCode?: CountryCode;
-}
-
 export function NumberField(
   options: Omit<ApiPropertyOptions, 'type'> & INumberFieldOptions = {},
 ): PropertyDecorator {
@@ -411,16 +407,20 @@ export function ClassFieldOptional<TClass extends Constructor>(
 /**
  * Decorator for phone number fields that integrates validation, transformation, and Swagger metadata.
  *
- * @param {Omit<ApiPropertyOptions, "type"> & IPhoneFieldOptions} [options={}]
+ * @param countryCode
+ * @param {Omit<ApiPropertyOptions, "type">} [options={}]
  *        - Configuration options such as `nullable`, `minLength`, `maxLength`, `toLowerCase`, `toUpperCase`, `each`, `swagger`, and `countryCode`.
  *
  * @returns {PropertyDecorator} - A decorator for phone number fields.
  */
 export function PhoneField(
-  options: Omit<ApiPropertyOptions, 'type'> & IPhoneFieldOptions = {},
+  countryCode: CountryCode,
+  options: Omit<ApiPropertyOptions, 'type'> & IStringFieldOptions = {},
 ): PropertyDecorator {
   const decorators = [
-    IsPhoneNumber(options.countryCode),
+    IsPhoneNumber(countryCode, {
+      message: 'Invalid phone number',
+    }),
     StringField({ toLowerCase: true, ...options }),
   ];
 

@@ -1,14 +1,22 @@
-import { applyDecorators, HttpCode, HttpStatus, Type } from '@nestjs/common';
+import {
+  applyDecorators,
+  HttpCode,
+  HttpStatus,
+  Type,
+  UseGuards,
+} from '@nestjs/common';
 import { STATUS_CODES } from 'http';
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiResponse,
-} from '@nestjs/swagger';
+  ApiResponse
+} from "@nestjs/swagger";
 import { ApiPaginatedResponse } from './swagger.decorator';
 import { ErrorDto } from '../../shared/dto/error.dto';
-import { ApiResponseOptions } from "@nestjs/swagger/dist/decorators/api-response.decorator";
+import { Public } from './public.decorator';
+import { AuthGuard } from '../../module/auth/auth.guard';
 
 type ApiResponseType = number;
 
@@ -20,7 +28,7 @@ interface IApiOptions<T extends Type<any>> {
   statusCode?: HttpStatus;
   isPaginated?: boolean;
   // paginationType ? : PaginationType;
-  // isPublic: boolean;
+  isPublic?: boolean;
 }
 
 const getDefaultErrorResponses = (): ApiResponseType[] => [
@@ -55,7 +63,7 @@ export const ApiEndpoint = (
     // paginationType,
     errorResponses,
     // auths = ["jwt"],
-    // isPublic,
+    isPublic = false,
   } = options;
 
   const okResponse = isPaginated
@@ -69,13 +77,13 @@ export const ApiEndpoint = (
         description: description ?? 'OK',
       };
 
-  // const authDecorators = (auths).map(auth => {
+  // const authDecorators = auths.map((auth) => {
   //   switch (auth) {
-  //     case "basic":
+  //     case 'basic':
   //       return ApiBasicAuth();
-  //     case "api-key":
-  //       return ApiSecurity("Api-Key");
-  //     case "jwt":
+  //     case 'api-key':
+  //       return ApiSecurity('Api-Key');
+  //     case 'jwt':
   //     default:
   //       return ApiBearerAuth();
   //   }
@@ -91,7 +99,7 @@ export const ApiEndpoint = (
         ? ApiCreatedResponse(okResponse)
         : ApiOkResponse(okResponse),
     ...createErrorResponses(errorResponses),
-    // ...(isPublic ? [Public()] : [UseGuards(AuthGuard('jwt'))]),
+    ...(isPublic ? [Public()] : [UseGuards(AuthGuard), ApiBearerAuth()]),
   ];
 
   return applyDecorators(...decorators);

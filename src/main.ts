@@ -35,6 +35,7 @@ async function bootstrap() {
   // setup global exception filter
   app.useGlobalFilters(new GlobalExceptionFilter(configService));
 
+
   if (isDevelopment) {
     configSwagger(app);
   }

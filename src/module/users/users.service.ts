@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { UserCreateReqDto } from './dto/user-create.req.dto';
 import { buildPagination } from '../../common/pagination/pagination';
 import { PaginationDto } from '../../common/pagination/offset/pagination.dto';
+import { RegisterResDto } from '../auth/dto/register.res.dto';
 
 @Injectable()
 export class UsersService {
@@ -28,12 +29,6 @@ export class UsersService {
                     $options: 'i',
                   },
                 },
-                {
-                  phone_number: {
-                    $regex: options.q,
-                    $options: 'i',
-                  },
-                },
               ],
             }
           : {}),
@@ -43,5 +38,17 @@ export class UsersService {
         // updated_at: options.order,
       },
     );
+  }
+
+  async findOneByUsername(username: string) {
+    return this.userModel
+      .findOne({
+        username,
+      })
+      .exec();
+  }
+
+  create(dto: RegisterResDto) {
+    return this.userModel.create(dto);
   }
 }

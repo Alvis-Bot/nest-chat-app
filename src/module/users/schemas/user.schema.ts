@@ -21,7 +21,10 @@ export class User extends BaseSchema {
   full_name: string;
 
   @Prop()
-  phone_number: string;
+  username: string;
+
+  @Prop()
+  password: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

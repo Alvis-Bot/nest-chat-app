@@ -9,7 +9,7 @@ export function middleware(app: INestApplication): INestApplication {
   // Dùng để bảo mật ứng dụng bằng cách thiết lập các HTTP header
   app.use(helmet());
 
-  // app.enableCors()
+  app.enableCors()
 
   return app;
 }

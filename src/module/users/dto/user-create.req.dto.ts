@@ -7,8 +7,6 @@ export class UserCreateReqDto {
   @StringField()
   full_name: string;
 
-  @PhoneField({
-    countryCode: 'VN',
-  })
+  @PhoneField('VN')
   phone_number: string;
 }
