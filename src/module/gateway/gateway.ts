@@ -4,8 +4,8 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Server, Socket } from "socket.io";
-import {  GatewaySessionManager } from './gateway.session';
+import { Server, Socket } from 'socket.io';
+import { GatewaySessionManager } from './gateway.session';
 import { JwtService } from '@nestjs/jwt';
 
 @WebSocketGateway({

@@ -21,7 +21,7 @@ import { AuthGuard } from '../../module/auth/auth.guard';
 type ApiResponseType = number;
 
 interface IApiOptions<T extends Type<any>> {
-  type?: T;
+  type?: T
   summary?: string;
   description?: string;
   errorResponses?: ApiResponseType[];
@@ -52,7 +52,7 @@ const createErrorResponses = (
   );
 
 export const ApiEndpoint = (
-  options: IApiOptions<Type<any>>,
+  options: IApiOptions<Type> = {},  // Default value to an empty object
 ): MethodDecorator => {
   const {
     type,
@@ -60,38 +60,23 @@ export const ApiEndpoint = (
     description,
     statusCode,
     isPaginated,
-    // paginationType,
     errorResponses,
-    // auths = ["jwt"],
     isPublic = false,
-  } = options;
+  } = options || {}; // Destructure options with fallback to an empty object
 
   const okResponse = isPaginated
     ? {
-        type,
-        description: description ?? 'OK',
-      }
+      type,
+      description: description ?? 'OK',
+    }
     : {
-        isArray: true,
-        type,
-        description: description ?? 'OK',
-      };
-
-  // const authDecorators = auths.map((auth) => {
-  //   switch (auth) {
-  //     case 'basic':
-  //       return ApiBasicAuth();
-  //     case 'api-key':
-  //       return ApiSecurity('Api-Key');
-  //     case 'jwt':
-  //     default:
-  //       return ApiBearerAuth();
-  //   }
-  // });
+      isArray: true,
+      type,
+      description: description ?? 'OK',
+    };
 
   const decorators = [
     ApiOperation({ summary }),
-
     HttpCode(statusCode || HttpStatus.OK),
     isPaginated
       ? ApiPaginatedResponse(okResponse)

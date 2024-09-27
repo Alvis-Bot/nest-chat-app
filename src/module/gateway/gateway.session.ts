@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 import {  Socket} from 'socket.io';
+import { Types } from "mongoose";
 
 
 
@@ -8,8 +9,8 @@ import {  Socket} from 'socket.io';
 export class GatewaySessionManager {
   private readonly sessions: Map<string, Socket> = new Map();
 
-  getUserSocket(id: string) {
-    return this.sessions.get(id);
+  getUserSocket(userId: string) {
+    return this.sessions.get(userId);
   }
 
   setUserSocket(userId: string, socket: Socket) {

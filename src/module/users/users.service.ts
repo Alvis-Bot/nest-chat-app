@@ -6,6 +6,7 @@ import { UserCreateReqDto } from './dto/user-create.req.dto';
 import { buildPagination } from '../../common/pagination/pagination';
 import { PaginationDto } from '../../common/pagination/offset/pagination.dto';
 import { RegisterResDto } from '../auth/dto/register.res.dto';
+import { generateUser } from '../../shared/utils/data.util';
 
 @Injectable()
 export class UsersService {
@@ -48,7 +49,22 @@ export class UsersService {
       .exec();
   }
 
-  create(dto: RegisterResDto) {
+  create(dto: RegisterResDto): Promise<User> {
     return this.userModel.create(dto);
   }
+
+  async random() {
+    const users = generateUser(10);
+    return this.userModel.create(users);
+  }
+
+  async getUsersExcept(username: string) {
+    return this.userModel
+      .find({
+        username: { $ne: username },
+      })
+      .exec();
+  }
+
+
 }

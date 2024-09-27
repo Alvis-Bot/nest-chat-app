@@ -14,4 +14,7 @@ export class RegisterResDto {
     default: '123456',
   })
   password: string;
+
+  @StringField()
+  full_name: string;
 }

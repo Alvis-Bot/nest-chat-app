@@ -4,7 +4,7 @@ import { UsersService } from '../users/users.service';
 import { User } from '../users/schemas/user.schema';
 import { Conversation } from './schemas/conversation.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from "mongoose";
 import { Message } from '../messages/schemas/messsage.schema';
 
 @Injectable()
@@ -31,7 +31,7 @@ export class ConversationsService {
         400,
       );
     }
-    const isCreated = await this.isCreated(creator.id, recipient.id);
+    const isCreated = await this.isCreated(creator._id, recipient.id);
     if (isCreated) {
       throw new HttpException('Conversation already exists', 400);
     }
@@ -53,7 +53,7 @@ export class ConversationsService {
     return conversation;
   }
 
-  async isCreated(creator_id: string, recipient_id: string) {
+  async isCreated(creator_id: Types.ObjectId, recipient_id: Types.ObjectId) {
     return this.conversationModel
       .findOne({
         $or: [
@@ -70,7 +70,7 @@ export class ConversationsService {
       .exec();
   }
 
-  async getConversations(_id: string) {
+  async getConversations(_id: Types.ObjectId) {
     return this.conversationModel
       .find({
         $or: [{ creator: _id }, { recipient: _id }],

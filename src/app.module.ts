@@ -15,6 +15,10 @@ import { GatewayModule } from './module/gateway/gateway.module';
 import { ConversationsModule } from './module/conversations/conversations.module';
 import { EventEmitterModule } from "@nestjs/event-emitter";
 import { EventsModule } from './module/events/events.module';
+import { FriendsModule } from './module/friends/friends.module';
+import { FriendRequestsModule } from './module/friend-requests/friend-requests.module';
+import { APP_GUARD } from "@nestjs/core";
+import { AuthGuard } from "./module/auth/auth.guard";
 
 @Module({
   imports: [
@@ -43,6 +47,14 @@ import { EventsModule } from './module/events/events.module';
     GatewayModule,
     ConversationsModule,
     EventsModule,
+    FriendsModule,
+    FriendRequestsModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
   ],
 })
 export class AppModule {}

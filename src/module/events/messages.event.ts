@@ -19,15 +19,13 @@ export class MessagesEvent {
       conversation: { creator, recipient },
     } = payload.message;
 
-    const authorSocket = this.sessions.getUserSocket(author.id);
-    const recipientSocket =
-      author._id === creator._id
-        ? this.sessions.getUserSocket(recipient.id)
-        : this.sessions.getUserSocket(creator.id);
+    const authorSocket = this.sessions.getUserSocket(author._id.toString());
+    const recipientSocket = author._id.equals(creator._id)
+      ? this.sessions.getUserSocket(recipient._id.toHexString())
+      : this.sessions.getUserSocket(creator._id.toHexString());
 
-    console.log('authorSocket', authorSocket);
-    console.log('recipientSocket', recipientSocket.id);
-    if (authorSocket) recipientSocket.emit('onMessage', payload.conversation);
-    if (recipientSocket) recipientSocket.emit('onMessage', payload.conversation);
+
+    if (authorSocket) recipientSocket.emit('onMessage', payload);
+    if (recipientSocket) recipientSocket.emit('onMessage', payload);
   }
 }

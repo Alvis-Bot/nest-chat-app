@@ -27,8 +27,8 @@ export class ConversationsController {
     isPublic: false,
   })
   @Get()
-  getConversations(@AuthUser() { id }: User) {
-    return this.conversationsService.getConversations(id);
+  getConversations(@AuthUser() { _id }: User) {
+    return this.conversationsService.getConversations(_id);
   }
 
   @ApiEndpoint({

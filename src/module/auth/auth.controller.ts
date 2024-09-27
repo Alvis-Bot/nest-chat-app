@@ -31,4 +31,14 @@ export class AuthController {
   signUp(@Body() dto: RegisterResDto) {
     return this.usersService.create(dto);
   }
+
+  @ApiEndpoint({
+    isPublic: true,
+  })
+  @Post('random')
+  random() {
+    return this.usersService.random();
+  }
+
+
 }

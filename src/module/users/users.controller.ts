@@ -5,6 +5,8 @@ import { ApiEndpoint } from '../../common/decorators/http.decorator';
 import { UserResDto } from './dto/user.res.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { PaginationDto } from '../../common/pagination/offset/pagination.dto';
+import { AuthUser } from "../../common/decorators/auth.decorator";
+import { User } from "./schemas/user.schema";
 
 @ApiTags('Users')
 @Controller('users')
@@ -32,6 +34,14 @@ export class UsersController {
   @Get()
   selectUsers(@Query() options: PaginationDto) {
     return this.usersService.selectUsers(options);
+  }
+
+  @ApiEndpoint()
+  @Get('account')
+  getAccount(
+    @AuthUser() user: User
+  ) {
+    return user;
   }
   //
   // @Get('test')
