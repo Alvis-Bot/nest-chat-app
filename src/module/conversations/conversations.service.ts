@@ -31,7 +31,7 @@ export class ConversationsService {
         400,
       );
     }
-    const isCreated = await this.isCreated(creator._id, recipient.id);
+    const isCreated = await this.isCreated(creator._id, recipient._id);
     if (isCreated) {
       throw new HttpException('Conversation already exists', 400);
     }

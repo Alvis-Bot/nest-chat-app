@@ -1,24 +1,25 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BaseModule } from './base/base.module';
-import { HealthModule } from './health/health.module';
+import { HealthModule } from './module/health/health.module';
 import appConfig from './configs/envs/app.config';
 import databaseConfig from './configs/envs/database.config';
 import 'dotenv/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AllConfigType } from './shared/types';
 import { UsersModule } from './module/users/users.module';
-import { FirebaseModule } from './firebase/firebase.module';
 import { AuthModule } from './module/auth/auth.module';
 import { MessagesModule } from './module/messages/messages.module';
 import { GatewayModule } from './module/gateway/gateway.module';
 import { ConversationsModule } from './module/conversations/conversations.module';
-import { EventEmitterModule } from "@nestjs/event-emitter";
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { EventsModule } from './module/events/events.module';
 import { FriendsModule } from './module/friends/friends.module';
 import { FriendRequestsModule } from './module/friend-requests/friend-requests.module';
-import { APP_GUARD } from "@nestjs/core";
-import { AuthGuard } from "./module/auth/auth.guard";
+import { NestjsFingerprintModule } from 'nestjs-fingerprint';
+import { SessionsModule } from './module/sessions/sessions.module';
+import { OneSignalModule } from "onesignal-api-client-nest";
+import { FirebaseModule } from './module/firebase/firebase.module';
 
 @Module({
   imports: [
@@ -26,6 +27,22 @@ import { AuthGuard } from "./module/auth/auth.guard";
       isGlobal: true,
       load: [appConfig, databaseConfig],
       envFilePath: ['.env', `.env.${process.env.NODE_ENV}`],
+    }),
+    NestjsFingerprintModule.forRoot({
+      params: ['headers', 'userAgent', 'ipAddress'],
+      cookieOptions: {
+        name: 'fingerprint',
+        httpOnly: true, // optional
+      },
+    }),
+    OneSignalModule.forRootAsync({
+      useFactory: async (configService: ConfigService) => {
+        return {
+          appId: configService.get('ONESIGNAL_APP_ID'),
+          restApiKey: configService.get('ONESIGNAL_REST_API_KEY'),
+        };
+      },
+      inject: [ConfigService],
     }),
     EventEmitterModule.forRoot({
       global: true,
@@ -41,7 +58,6 @@ import { AuthGuard } from "./module/auth/auth.guard";
     BaseModule,
     HealthModule,
     UsersModule,
-    FirebaseModule,
     AuthModule,
     MessagesModule,
     GatewayModule,
@@ -49,12 +65,9 @@ import { AuthGuard } from "./module/auth/auth.guard";
     EventsModule,
     FriendsModule,
     FriendRequestsModule,
+    SessionsModule,
+    FirebaseModule,
   ],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
-  ],
+
 })
 export class AppModule {}

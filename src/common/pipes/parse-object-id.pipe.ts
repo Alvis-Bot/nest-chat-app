@@ -5,16 +5,15 @@ import {
   PipeTransform,
 } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class ValidateMongoId implements PipeTransform<string> {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  transform(value: string, _metadata: ArgumentMetadata): string {
-    // Optional casting into ObjectId if wanted!
-    if (ObjectId.isValid(value)) {
-      if (String(new ObjectId(value)) === value) return value;
-      throw new BadRequestException();
+  transform(value: string, metadata: ArgumentMetadata) {
+    if (!Types.ObjectId.isValid(value)) {
+      throw new BadRequestException('Invalid ObjectId');
     }
-    throw new BadRequestException();
+    return new ObjectId(value);
   }
 }
+

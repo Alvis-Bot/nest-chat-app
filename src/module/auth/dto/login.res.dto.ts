@@ -1,7 +1,7 @@
 import {
   PasswordField,
-  StringField,
-} from '../../../common/decorators/field.decorator';
+  StringField, StringFieldOptional
+} from "../../../common/decorators/field.decorator";
 
 export class LoginResDto {
   @StringField({
@@ -14,4 +14,7 @@ export class LoginResDto {
     default: '123456',
   })
   password: string;
+
+  @StringFieldOptional()
+  fcmToken?: string;
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { User } from './schemas/user.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from "mongoose";
 import { InjectModel } from '@nestjs/mongoose';
 import { UserCreateReqDto } from './dto/user-create.req.dto';
 import { buildPagination } from '../../common/pagination/pagination';
@@ -41,7 +41,7 @@ export class UsersService {
     );
   }
 
-  async findOneByUsername(username: string) {
+  async findOneByUsername(username: string) : Promise<User> {
     return this.userModel
       .findOne({
         username,
@@ -67,4 +67,18 @@ export class UsersService {
   }
 
 
+  updateRefreshToken(userId: Types.ObjectId, hashedRefreshToken: string) {
+    return this.userModel
+      .updateOne(
+        {
+          _id: userId,
+        },
+        {
+          $set: {
+            refresh_token: hashedRefreshToken,
+          },
+        },
+      )
+      .exec();
+  }
 }

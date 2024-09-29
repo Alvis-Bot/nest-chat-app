@@ -50,9 +50,9 @@ export class FriendRequestsController {
   @Patch(':id/accept')
   async acceptFriendRequest(
     @AuthUser() { _id: user_id }: User,
-    @Query('id', ValidateMongoId) id: string,
+    @Param('id', ValidateMongoId) friend_request_id: Types.ObjectId,
   ) {
-    const friend_request_id = Types.ObjectId.createFromHexString(id);
+    console.log('id', friend_request_id);
     const response = await this.friendRequestsService.accept(
       friend_request_id,
       user_id,

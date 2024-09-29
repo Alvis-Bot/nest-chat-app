@@ -6,9 +6,9 @@ import {
   HttpHealthIndicator,
   MongooseHealthIndicator,
 } from '@nestjs/terminus';
-import { AllConfigType } from '../shared/types';
+import { AllConfigType } from '../../shared/types';
 import { ConfigService } from '@nestjs/config';
-import { Environment } from '../shared/constants/app.constant';
+import { Environment } from '../../shared/constants/app.constant';
 
 @ApiTags('Health')
 @Controller('health')

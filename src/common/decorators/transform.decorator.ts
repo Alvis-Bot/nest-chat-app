@@ -17,10 +17,10 @@ export function Trim(): PropertyDecorator {
     const value = params.value as string[] | string;
 
     if (Array.isArray(value)) {
-      return value.map((v) => v.trim().replaceAll(/\s\s+/g, ' '));
+      return value.map((v) => v.trim().replace(/\s\s+/g, ' '));
     }
 
-    return value.trim().replaceAll(/\s\s+/g, ' ');
+    return value.trim().replace(/\s\s+/g, ' ');
   });
 }
 

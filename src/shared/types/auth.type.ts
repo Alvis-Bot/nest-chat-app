@@ -8,4 +8,7 @@ export type AuthenticatedRequest = {
 export type JwtPayload = {
   username: string;
   sub: string;
+  iat?: number;
+  exp?: number;
+  refresh_token?: string;
 };

@@ -1,4 +1,5 @@
 import { DatabaseConfig } from './database.type';
+import { User } from '../../module/users/schemas/user.schema';
 
 export type AppConfig = {
   port: number;
@@ -9,10 +10,12 @@ export type AppConfig = {
   debug: boolean;
   cors_origin: boolean | string | string[];
   log_level: string;
-  firebase_sdk_path: string;
 };
 
 export type AllConfigType = {
   database: DatabaseConfig;
   app: AppConfig;
 };
+
+
+

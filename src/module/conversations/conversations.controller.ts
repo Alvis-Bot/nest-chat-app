@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Param, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
 import { ConversationsService } from './conversations.service';
 import { ConversationCreateReqDto } from './dto/conversation-create-req.dto';
 import { User } from '../users/schemas/user.schema';
 import { AuthUser } from '../../common/decorators/auth.decorator';
 import { ApiEndpoint } from '../../common/decorators/http.decorator';
 import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from "../auth/guards/jwt.auth.guard";
 
 @ApiTags('conversations')
 @Controller('conversations')
