@@ -40,4 +40,3 @@ export async function verifyHash(data: string, hash: string): Promise<boolean> {
   return await argon2.verify(data, hash);
 }
 
-

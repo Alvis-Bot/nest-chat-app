@@ -35,13 +35,12 @@ async function bootstrap() {
   // setup global exception filter
   app.useGlobalFilters(new GlobalExceptionFilter(configService));
 
-
   if (isDevelopment) {
     configSwagger(app);
   }
 
   // Middleware
-  middleware(app);
+   await middleware(app);
   await app.listen(configService.get('app.port', { infer: true }));
 
   console.log(`Application is running on: ${await app.getUrl()}`);

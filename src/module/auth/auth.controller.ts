@@ -1,46 +1,36 @@
 import {
   Body,
   Controller,
-  Get,
+  Get, Patch,
   Post,
   Req,
   Res,
-  UseGuards,
-} from '@nestjs/common';
+  UseGuards
+} from "@nestjs/common";
 import { AuthService } from './auth.service';
 import { ApiEndpoint } from '../../common/decorators/http.decorator';
-import { LoginResDto } from './dto/login.res.dto';
 import { UsersService } from '../users/users.service';
 import { RegisterResDto } from './dto/register.res.dto';
 import { Request, Response } from 'express';
-import { Fingerprint, IFingerprint } from 'nestjs-fingerprint';
 import { LocalAuthGuard } from './guards/local.auth.guard';
-import { JwtAuthGuard } from './guards/jwt.auth.guard';
-import { RefreshJwtAuthGuard } from './guards/refresh-jwt.guard';
 import { AuthUser } from '../../common/decorators/auth.decorator';
 import { JwtPayload } from '../../shared/types';
-import { User } from "../users/schemas/user.schema";
+import { User } from '../users/schemas/user.schema';
+import { AuthenticatedGuard } from './guards/authenticated.guard';
+import { SessionsService } from '../sessions/sessions.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
+    private readonly sessionsService: SessionsService,
   ) {}
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async signIn(
-    @AuthUser() user: User,
-    @Res({ passthrough: true }) res: Response,
-    @Fingerprint() fp: IFingerprint,
-    @Body() dto: LoginResDto,
-  ) {
-    const authentication = await this.authService.getJwtToken(user , fp , dto.fcmToken);
-    res.cookie('authentication', authentication, {
-      httpOnly: true,
-      secure: false,
-    });
+  async signIn(@AuthUser() user: User) {
+    return user;
   }
 
   @Post('register')
@@ -48,7 +38,7 @@ export class AuthController {
     return this.usersService.create(dto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   @Get('/protected')
   getHello(@Req() req: Request) {
     return req.user;
@@ -62,23 +52,26 @@ export class AuthController {
     return this.usersService.random();
   }
 
-  @UseGuards(RefreshJwtAuthGuard)
-  @Get('refresh')
-  async refresh(
-    @AuthUser() payload: JwtPayload,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    console.log('payload', payload);
-    const authentication = await this.authService.refreshTokens(
-      payload.username,
-      payload.refresh_token,
-    );
-    // uodate the cookie
-    res.cookie('authentication', authentication, {
-      httpOnly: true,
-      secure: false,
-    });
+  @ApiEndpoint()
+  @Post('getAllSessionsByUser')
+  getAllSessionsByUser(@AuthUser() user: User) {
+    console.log('getAllSessionsByUser', user);
+    return this.sessionsService.getAllSessionsByUser(user._id);
   }
+
+  @Patch('renew')
+  async renew(@Req() req: Request, @Res() res: Response) {
+    const session = await this.sessionsService.findOneBySignedCookie(req.cookies['connect.sid']);
+    if (!session) {
+      return res.status(401).json({ msg: 'Session not found' });
+    }
+    session.expires = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
+
+    await session.save();
+    return res.json({ msg: 'Session renewed' });
+  }
+
+
 
   //Get / logout
   @Get('/logout')

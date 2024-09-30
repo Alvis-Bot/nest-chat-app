@@ -77,7 +77,6 @@ export class FriendRequestsService {
       throw new HttpException('Friend Request Not Found', 404);
     if (friendRequest.status === FriendRequestStatus.ACCEPTED)
       throw new HttpException('Friend Request Already Accepted', 400);
-    console.log(friendRequest.receiver._id, user_id);
     if (!friendRequest.receiver._id.equals(user_id))
       throw new HttpException('Friend Request Not For You', 400);
     const updatedFriendRequest =
@@ -103,7 +102,6 @@ export class FriendRequestsService {
     const friendRequest = await this.findOneById(friend_request_id);
     if (!friendRequest)
       throw new HttpException('Friend Request Not Found', 404);
-    console.log(friendRequest.sender._id, user_id);
     // nếu người gửi khác với người đang đăng nhập thì không cho hủy
     if (!friendRequest.sender._id.equals(user_id))
       throw new HttpException('Friend Request Not For You', 400);

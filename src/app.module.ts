@@ -16,10 +16,8 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { EventsModule } from './module/events/events.module';
 import { FriendsModule } from './module/friends/friends.module';
 import { FriendRequestsModule } from './module/friend-requests/friend-requests.module';
-import { NestjsFingerprintModule } from 'nestjs-fingerprint';
-import { SessionsModule } from './module/sessions/sessions.module';
-import { OneSignalModule } from "onesignal-api-client-nest";
 import { FirebaseModule } from './module/firebase/firebase.module';
+import { SessionsModule } from './module/sessions/sessions.module';
 
 @Module({
   imports: [
@@ -27,22 +25,6 @@ import { FirebaseModule } from './module/firebase/firebase.module';
       isGlobal: true,
       load: [appConfig, databaseConfig],
       envFilePath: ['.env', `.env.${process.env.NODE_ENV}`],
-    }),
-    NestjsFingerprintModule.forRoot({
-      params: ['headers', 'userAgent', 'ipAddress'],
-      cookieOptions: {
-        name: 'fingerprint',
-        httpOnly: true, // optional
-      },
-    }),
-    OneSignalModule.forRootAsync({
-      useFactory: async (configService: ConfigService) => {
-        return {
-          appId: configService.get('ONESIGNAL_APP_ID'),
-          restApiKey: configService.get('ONESIGNAL_REST_API_KEY'),
-        };
-      },
-      inject: [ConfigService],
     }),
     EventEmitterModule.forRoot({
       global: true,
@@ -65,8 +47,8 @@ import { FirebaseModule } from './module/firebase/firebase.module';
     EventsModule,
     FriendsModule,
     FriendRequestsModule,
-    SessionsModule,
     FirebaseModule,
+    SessionsModule,
   ],
 
 })

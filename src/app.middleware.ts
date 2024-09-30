@@ -1,35 +1,71 @@
 import { INestApplication } from '@nestjs/common';
-import * as compression from 'compression';
+import compression from 'compression';
 import helmet from 'helmet';
-import { ConfigService } from "@nestjs/config";
-import { AllConfigType } from "./shared/types";
-import * as cookieParser from 'cookie-parser';
-import * as admin from "firebase-admin";
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import passport from 'passport';
+import { ConfigService } from '@nestjs/config';
+import { AllConfigType } from './shared/types';
+import RedisStore from 'connect-redis';
+import { RedisIoAdapter } from './module/gateway/gateway.adapter';
+import { createClient } from 'redis';
 
-export function middleware(app: INestApplication): INestApplication {
-  // Dùng để nén dữ liệu trước khi gửi về client
+export  async function middleware(
+  app: INestApplication,
+): Promise<INestApplication> {
+  // Compression middleware
   app.use(compression());
 
-  const configService = app.get(ConfigService);
-  // Dùng để bảo mật ứng dụng bằng cách thiết lập các HTTP header
+  const configService = app.get(ConfigService<AllConfigType>);
 
-  app.use(helmet());
+  // Helmet for security headers with environment-specific configurations
+  const isProd = process.env.NODE_ENV === 'production';
+  app.use(
+    helmet({
+      contentSecurityPolicy: isProd ? undefined : false, // Disable CSP for development
+    }),
+  );
 
+  // CORS setup
   app.enableCors({
-    origin : true,
+    origin: true,
     credentials: true,
   });
 
-  app.use(cookieParser());
-
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: configService.get("FIREBASE_PROJECT_ID"),
-      privateKey: configService.get('FIREBASE_PRIVATE_KEY').replace(/\\n/g, '\n'),
-      clientEmail: configService.get('FIREBASE_CLIENT_EMAIL'),
-    }),
+  // Reuse Redis client if already connected
+  const redisClient = createClient({
+    url : configService.get('database.redis_url', { infer: true }),
   });
+  redisClient.connect().catch(console.error)
+  const RedisStoreInstance = new RedisStore({
+    client: redisClient,
+    prefix: 'alvis:',
+  });
+  const redisIoAdapter = new RedisIoAdapter(app , configService);
+  await redisIoAdapter.connectToRedis();
+  app.useWebSocketAdapter(redisIoAdapter);
 
+  // Session middleware
+  app.use(
+    session({
+      secret: 'secret',
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        secure: isProd, // Use secure cookies in production (HTTPS only)
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+        sameSite: 'strict',
+      },
+      store: RedisStoreInstance,
+    }),
+  );
+
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  // Cookie parser middleware
+  app.use(cookieParser());
 
   return app;
 }

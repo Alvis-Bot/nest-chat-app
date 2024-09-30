@@ -52,7 +52,6 @@ export class FriendRequestsController {
     @AuthUser() { _id: user_id }: User,
     @Param('id', ValidateMongoId) friend_request_id: Types.ObjectId,
   ) {
-    console.log('id', friend_request_id);
     const response = await this.friendRequestsService.accept(
       friend_request_id,
       user_id,

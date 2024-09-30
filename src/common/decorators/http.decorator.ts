@@ -16,7 +16,7 @@ import {
 import { ApiPaginatedResponse } from './swagger.decorator';
 import { ErrorDto } from '../../shared/dto/error.dto';
 import { Public } from './public.decorator';
-import { JwtAuthGuard } from "../../module/auth/guards/jwt.auth.guard";
+import { AuthenticatedGuard } from "../../module/auth/guards/authenticated.guard";
 
 type ApiResponseType = number;
 
@@ -84,7 +84,7 @@ export const ApiEndpoint = (
         ? ApiCreatedResponse(okResponse)
         : ApiOkResponse(okResponse),
     ...createErrorResponses(errorResponses),
-    ...(isPublic ? [Public()] : [UseGuards(JwtAuthGuard), ApiBearerAuth()]),
+    ...(isPublic ? [Public()] : [UseGuards(AuthenticatedGuard), ApiBearerAuth()]),
   ];
 
   return applyDecorators(...decorators);

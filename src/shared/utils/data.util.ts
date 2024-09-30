@@ -9,7 +9,6 @@ export const generateUser = (count: number) => {
       full_name: faker.person.fullName(),
       password: '123456',
       username: faker.internet.userName(),
-      refresh_token: faker.internet.password(),
     };
     users.push(user);
   }

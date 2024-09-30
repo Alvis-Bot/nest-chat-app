@@ -5,7 +5,6 @@ import { User } from '../users/schemas/user.schema';
 import { AuthUser } from '../../common/decorators/auth.decorator';
 import { ApiEndpoint } from '../../common/decorators/http.decorator';
 import { ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from "../auth/guards/jwt.auth.guard";
 
 @ApiTags('conversations')
 @Controller('conversations')
@@ -20,7 +19,6 @@ export class ConversationsController {
     @AuthUser() user: User,
     @Body() dto: ConversationCreateReqDto,
   ) {
-    console.log('user', user);
     return this.conversationsService.createConversation(user, dto);
   }
 

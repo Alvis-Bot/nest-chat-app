@@ -1,55 +1,39 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from "mongoose";
-import { BaseSchema } from "../../../shared/schemas/base.schema";
+import { BaseSchema } from '../../../shared/schemas/base.schema';
+import MongoStore from 'connect-mongo';
+import { Transform } from "class-transformer";
 import { User } from "../../users/schemas/user.schema";
-import { UserAgent } from "nestjs-fingerprint";
+import { Cookie } from "express-session";
 
-export type SessionDocument = HydratedDocument<Session>;
+export type UserDocument = HydratedDocument<Session>;
 
-
-type Device = {
-  family: string;
-  version: string;
-}
-
-type Browser = {
-  family: string;
-  version: string;
-}
-
-type Os = {
-  family: string;
-  major: string;
-  minor: string;
-}
+type SessionData = {
+  cookie: Cookie;
+  passport: {
+    user: User;
+  };
+};
 
 @Schema({
-  timestamps: {
-    createdAt: "created_at",
-    updatedAt: "updated_at"
-  },
-  collection: "sessions",
+  collection: 'sessions',
   toJSON: {
     transform: (doc, ret) => {
       delete ret.__v;
-    }
-  }
+    },
+  },
 })
-export class Session extends BaseSchema {
-  @Prop({ type: Types.ObjectId, ref: User.name, required: true })
-  user: User;
+export class Session {
 
-  @Prop({ required: false })
-  fcmToken: string;
+  @Prop( { type: String })
+  _id?: string
 
-  @Prop({  type: Object })
-  userAgent: UserAgent;
 
-  @Prop()
-  fingerprint: string;
+  @Prop({ type: Object  })
+  session: SessionData;
 
   @Prop()
-  ipAddress: string;
+  expires: Date;
 }
 
 export const SessionSchema = SchemaFactory.createForClass(Session);

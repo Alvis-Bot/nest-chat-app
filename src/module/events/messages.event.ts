@@ -19,10 +19,12 @@ export class MessagesEvent {
       conversation: { creator, recipient },
     } = payload.message;
 
+    //Author is the user who sent the message
     const authorSocket = this.sessions.getUserSocket(author._id.toString());
-    const recipientSocket = author._id.equals(creator._id)
-      ? this.sessions.getUserSocket(recipient._id.toHexString())
-      : this.sessions.getUserSocket(creator._id.toHexString());
+    //Recipient is the user who received the message
+    const recipientSocket = !author._id.equals(creator._id)
+      ? this.sessions.getUserSocket(recipient._id.toString())
+      : this.sessions.getUserSocket(creator._id.toString());
 
 
     if (authorSocket) recipientSocket.emit('onMessage', payload);

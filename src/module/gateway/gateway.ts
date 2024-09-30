@@ -7,10 +7,16 @@ import {
 import { Server, Socket } from 'socket.io';
 import { GatewaySessionManager } from './gateway.session';
 import { JwtService } from '@nestjs/jwt';
+import { User } from "../users/schemas/user.schema";
+
+export interface AuthenticatedSocket extends Socket {
+  user: User;
+}
 
 @WebSocketGateway({
   cors: {
-    origin: '*',
+    origin: true,
+    credentials: true,
   },
 })
 export class MessagingGateway
@@ -24,20 +30,12 @@ export class MessagingGateway
   @WebSocketServer()
   server: Server;
 
-  handleConnection(client: Socket, ...args: any[]) {
-    const userId = client.handshake.query.userId as string;
-    console.log('Client connected', client.id, userId);
-    if (!userId) {
-      client.disconnect();
-      return;
-    }
-    console.log('Client connected', client.id);
-    this.sessions.setUserSocket(userId, client);
+  handleConnection(client: AuthenticatedSocket, ...args: any[]) {
+    console.log('Client connected:', client.id , client.user._id);
+    this.sessions.setUserSocket(client.user._id.toString(), client);
   }
 
-  handleDisconnect(client: Socket) {
-    const userId = client.handshake.query.userId as string;
-    console.log('Client disconnected', client.id);
-    this.sessions.removeUserSocket(userId);
+  handleDisconnect(client: AuthenticatedSocket) {
+    this.sessions.removeUserSocket(client.user._id.toString());
   }
 }
